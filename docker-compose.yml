@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    networks:
+      binliz-com-network:
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:rw,cached
+      - ./src:/app:rw
+    env_file:
+      - .env
+    restart: always
+    links:
+      - fpm
+  memcached:
+    image: memcached:1.6.17-alpine
+    restart: always
+    command: ["-m", "256"]
+    networks:
+      binliz-com-network:
+  fpm:
+    build:
+      context: .
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-binliz}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./src:/app
+    restart: always
+    networks:
+      binliz-com-network:
+    env_file:
+      - .env
+volumes:
+  binliz-com-mysql-volume:
+  binliz-com-mysql-tests-volume:
+  binliz-com-redis-volume:
+  binliz-com-rabbit-data-volume:
+networks:
+  binliz-com-network:
