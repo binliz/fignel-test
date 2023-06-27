@@ -14,12 +14,6 @@ services:
     restart: always
     links:
       - fpm
-  memcached:
-    image: memcached:1.6.17-alpine
-    restart: always
-    command: ["-m", "256"]
-    networks:
-      binliz-com-network:
   fpm:
     build:
       context: .
@@ -36,10 +30,6 @@ services:
       binliz-com-network:
     env_file:
       - .env
-volumes:
-  binliz-com-mysql-volume:
-  binliz-com-mysql-tests-volume:
-  binliz-com-redis-volume:
-  binliz-com-rabbit-data-volume:
+
 networks:
   binliz-com-network:
